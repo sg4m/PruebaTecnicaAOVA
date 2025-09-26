@@ -1,6 +1,5 @@
 """
-Cliente de Supabase para el Agente de IA
-Maneja la conexión y operaciones CRUD con la base de datos
+Cliente de Supabase con CRUD para la base de datos
 """
 
 from supabase import create_client, Client
@@ -11,7 +10,6 @@ from datetime import datetime, timedelta, timezone
 from src.utils.config import Config
 
 class SupabaseClient:
-    """Cliente para interactuar con Supabase"""
     
     def __init__(self):
         """Inicializar cliente de Supabase"""
@@ -45,15 +43,7 @@ class SupabaseClient:
     # ==========================================
     
     def create_lead(self, lead_data: Dict[str, Any]) -> Optional[str]:
-        """
-        Crear un nuevo lead en la base de datos
-        
-        Args:
-            lead_data: Información del lead extraída por el sistema
-            
-        Returns:
-            ID del lead creado o None si hay error
-        """
+
         try:
             # Preparar datos para inserción
             lead_record = self._prepare_lead_data(lead_data)
@@ -74,16 +64,7 @@ class SupabaseClient:
             return None
     
     def update_lead(self, lead_id: str, lead_data: Dict[str, Any]) -> bool:
-        """
-        Actualizar información de un lead existente
-        
-        Args:
-            lead_id: ID del lead a actualizar
-            lead_data: Nueva información del lead
-            
-        Returns:
-            True si se actualizó correctamente
-        """
+
         try:
             # Preparar datos de actualización
             update_data = self._prepare_lead_data(lead_data, update=True)
@@ -103,15 +84,7 @@ class SupabaseClient:
             return False
     
     def get_lead(self, lead_id: str) -> Optional[Dict[str, Any]]:
-        """
-        Obtener información de un lead por ID
-        
-        Args:
-            lead_id: ID del lead
-            
-        Returns:
-            Información del lead o None si no existe
-        """
+
         try:
             result = self.supabase.table('leads').select("*").eq('id', lead_id).execute()
             
@@ -125,16 +98,7 @@ class SupabaseClient:
             return None
     
     def search_leads(self, filters: Dict[str, Any] = None, limit: int = 50) -> List[Dict[str, Any]]: # type: ignore
-        """
-        Buscar leads con filtros opcionales
-        
-        Args:
-            filters: Filtros de búsqueda
-            limit: Límite de resultados
-            
-        Returns:
-            Lista de leads encontrados
-        """
+
         try:
             query = self.supabase.table('leads').select("*")
             
@@ -156,16 +120,7 @@ class SupabaseClient:
     # ==========================================
     
     def save_conversation(self, session_id: str, context_data: Dict[str, Any]) -> Optional[str]:
-        """
-        Guardar una conversación completa
-        
-        Args:
-            session_id: ID de la sesión de conversación
-            context_data: Datos del contexto de conversación
-            
-        Returns:
-            ID de la conversación guardada o None si hay error
-        """
+
         try:
             # Preparar datos de conversación
             conversation_record = self._prepare_conversation_data(session_id, context_data)
@@ -186,15 +141,7 @@ class SupabaseClient:
             return None
     
     def get_conversation(self, session_id: str) -> Optional[Dict[str, Any]]:
-        """
-        Obtener una conversación por session_id
-        
-        Args:
-            session_id: ID de la sesión
-            
-        Returns:
-            Datos de la conversación o None si no existe
-        """
+
         try:
             result = self.supabase.table('conversations').select("*").eq('session_id', session_id).execute()
             
@@ -208,15 +155,7 @@ class SupabaseClient:
             return None
     
     def get_lead_conversations(self, lead_id: str) -> List[Dict[str, Any]]:
-        """
-        Obtener todas las conversaciones de un lead
-        
-        Args:
-            lead_id: ID del lead
-            
-        Returns:
-            Lista de conversaciones del lead
-        """
+
         try:
             result = self.supabase.table('conversations').select("*").eq('lead_id', lead_id).execute()
             return result.data or []
@@ -230,16 +169,7 @@ class SupabaseClient:
     # ==========================================
     
     def save_interaction_metrics(self, session_id: str, metrics: Dict[str, Any]) -> bool:
-        """
-        Guardar métricas de una interacción
-        
-        Args:
-            session_id: ID de la sesión
-            metrics: Métricas de la interacción
-            
-        Returns:
-            True si se guardó correctamente
-        """
+
         try:
             metric_record = {
                 'session_id': session_id,
@@ -257,15 +187,7 @@ class SupabaseClient:
             return False
     
     def get_analytics_dashboard_data(self, days: int = 30) -> Dict[str, Any]:
-        """
-        Obtener datos para dashboard de analytics
-        
-        Args:
-            days: Número de días hacia atrás para analizar
-            
-        Returns:
-            Datos agregados para dashboard
-        """
+
         try:
             # Fecha límite
             date_limit = (datetime.utcnow() - timedelta(days=days)).isoformat()
