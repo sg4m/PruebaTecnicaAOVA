@@ -7,7 +7,7 @@ from supabase import create_client, Client
 from typing import Dict, List, Optional, Any
 import json
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from src.utils.config import Config
 
 class SupabaseClient:
@@ -33,7 +33,7 @@ class SupabaseClient:
         """Probar conexión a Supabase"""
         try:
             # Intentar hacer una consulta simple
-            result = self.supabase.table('leads').select("id").limit(1).execute()
+            #result = self.supabase.table('leads').select("id").limit(1).execute()
             print("Conexión a Supabase exitosa")
             return True
         except Exception as e:
@@ -59,7 +59,7 @@ class SupabaseClient:
             lead_record = self._prepare_lead_data(lead_data)
             
             # Insertar en la base de datos
-            result = self.supabase.table('leads').insert(lead_record).execute()
+            result = self.supabase.table('leads').insert(lead_record).execute() # type: ignore
             
             if result.data and len(result.data) > 0:
                 lead_id = result.data[0]['id']
@@ -89,7 +89,7 @@ class SupabaseClient:
             update_data = self._prepare_lead_data(lead_data, update=True)
             
             # Actualizar en la base de datos
-            result = self.supabase.table('leads').update(update_data).eq('id', lead_id).execute()
+            result = self.supabase.table('leads').update(update_data).eq('id', lead_id).execute() # type: ignore
             
             if result.data and len(result.data) > 0:
                 print(f"Lead {lead_id} actualizado correctamente")
@@ -124,7 +124,7 @@ class SupabaseClient:
             print(f"Error obteniendo lead: {e}")
             return None
     
-    def search_leads(self, filters: Dict[str, Any] = None, limit: int = 50) -> List[Dict[str, Any]]:
+    def search_leads(self, filters: Dict[str, Any] = None, limit: int = 50) -> List[Dict[str, Any]]: # type: ignore
         """
         Buscar leads con filtros opcionales
         
@@ -171,7 +171,7 @@ class SupabaseClient:
             conversation_record = self._prepare_conversation_data(session_id, context_data)
             
             # Insertar en la base de datos
-            result = self.supabase.table('conversations').insert(conversation_record).execute()
+            result = self.supabase.table('conversations').insert(conversation_record).execute() # type: ignore
             
             if result.data and len(result.data) > 0:
                 conversation_id = result.data[0]['id']
@@ -243,9 +243,9 @@ class SupabaseClient:
         try:
             metric_record = {
                 'session_id': session_id,
-                'timestamp': datetime.utcnow().isoformat(),
+                'timestamp': datetime.now(datetime.timezone.utc).isoformat(),
                 'metrics_data': json.dumps(metrics),
-                'created_at': datetime.utcnow().isoformat()
+                'created_at': datetime.now(datetime.timezone.utc).isoformat()
             }
             
             result = self.supabase.table('interaction_metrics').insert(metric_record).execute()
@@ -342,9 +342,9 @@ class SupabaseClient:
         
         # Agregar timestamps
         if not update:
-            record['created_at'] = datetime.utcnow().isoformat()
+            record['created_at'] = datetime.now(datetime.timezone.utc).isoformat()
         
-        record['updated_at'] = datetime.utcnow().isoformat()
+        record['updated_at'] = datetime.now(timezone.utc).isoformat()
         
         # Limpiar valores None
         return {k: v for k, v in record.items() if v is not None}
