@@ -119,16 +119,29 @@ class GeminiClient:
             response = self.model.generate_content(
                 extraction_prompt,
                 generation_config={
-                    'max_output_tokens': 2048,  # Aumentar tokens para respuestas más largas
-                    'temperature': 0.1,  # Baja temperatura para más consistencia
+                    'max_output_tokens': 2048,
+                    'temperature': 0.1,
+                },
+                safety_settings={
+                    'HARASSMENT': 'BLOCK_NONE',
+                    'HATE_SPEECH': 'BLOCK_NONE',
+                    'SEXUALLY_EXPLICIT': 'BLOCK_NONE',
+                    'DANGEROUS_CONTENT': 'BLOCK_NONE'
                 }
             )
+            
+            # Verificar si la respuesta es válida
+            if not response.candidates or not response.candidates[0].content.parts:
+                print(f"Respuesta bloqueada por safety filter. Finish reason: {response.candidates[0].finish_reason if response.candidates else 'desconocido'}")
+                return self._get_empty_lead_structure()
             
             # Limpiar y parsear respuesta JSON
             return self._parse_json_response(response.text)
                 
         except Exception as e:
             print(f"Error extracting lead info: {e}")
+            if "finish_reason" in str(e):
+                print("La conversación fue bloqueada por filtros de seguridad de Gemini")
             return self._get_empty_lead_structure()
 
     def analyze_lead_quality(self, lead_info: Dict) -> Dict:
@@ -389,7 +402,8 @@ class GeminiClient:
         """Construir prompt con contexto inteligente y personalidad del agente"""
         
         system_prompt = """
-        Eres un agente de ventas experto de AOVA, la plataforma líder de inteligencia artificial hecha específicamente para México. Tu misión es ayudar a empresas mexicanas a transformar su operación con IA.
+        Eres un agente de ventas experto de AOVA, la plataforma líder de inteligencia artificial hecha específicamente para México. 
+        Tu misión es ayudar a empresas mexicanas a transformar su operación con IA.
         
         SOBRE AOVA:
         - Somos especialistas en IA para el mercado mexicano
@@ -428,6 +442,7 @@ class GeminiClient:
         - Cualquier empresa: AOVA Lab para automatización específica
         
         NUNCA uses placeholders genéricos. Siempre habla de AOVA específicamente.
+        NUNCA uses [TU NOMBRE] como respuesta, responde con "Consultor de AOVA".
         """
         
         # Contexto inteligente del Context Manager

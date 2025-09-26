@@ -173,9 +173,9 @@ class SupabaseClient:
         try:
             metric_record = {
                 'session_id': session_id,
-                'timestamp': datetime.now(datetime.timezone.utc).isoformat(),
+                'timestamp': datetime.now(timezone.utc).isoformat(),
                 'metrics_data': json.dumps(metrics),
-                'created_at': datetime.now(datetime.timezone.utc).isoformat()
+                'created_at': datetime.now(timezone.utc).isoformat()
             }
             
             result = self.supabase.table('interaction_metrics').insert(metric_record).execute()
@@ -264,7 +264,7 @@ class SupabaseClient:
         
         # Agregar timestamps
         if not update:
-            record['created_at'] = datetime.now(datetime.timezone.utc).isoformat()
+            record['created_at'] = datetime.now(timezone.utc).isoformat()
         
         record['updated_at'] = datetime.now(timezone.utc).isoformat()
         

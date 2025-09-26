@@ -19,12 +19,7 @@ class SpeechToText:
     def transcribe_audio_file(self, audio_file) -> Optional[str]:
         """
         Transcribir archivo de audio a texto
-        
-        Args:
-            audio_file: Archivo de audio de Streamlit
-            
-        Returns:
-            Texto transcrito o None si hay error
+
         """
         temp_file_path = None
         wav_file_path = None
@@ -139,9 +134,7 @@ class SpeechToText:
     def is_microphone_available(self) -> bool:
         """
         Verificar si hay micrófono disponible
-        
-        Returns:
-            True si hay micrófono disponible
+
         """
         try:
             # Listar micrófonos disponibles
@@ -161,9 +154,7 @@ class SpeechToText:
     def get_microphone_list(self) -> list:
         """
         Obtener lista de micrófonos disponibles
-        
-        Returns:
-            Lista de nombres de micrófonos
+
         """
         try:
             return sr.Microphone.list_microphone_names()
