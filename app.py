@@ -131,33 +131,33 @@ def guardar_conversacion_completa() -> Optional[str]:
                 print(f"Error guardando mensaje {i}: {e}")
                 continue
         
-        print(f"✅ Conversación guardada: {conversation_id}")
-        print(f"✅ Mensajes guardados: {messages_saved}/{len(st.session_state.conversation_history)}")
+        print(f"Conversación guardada: {conversation_id}")
+        print(f"Mensajes guardados: {messages_saved}/{len(st.session_state.conversation_history)}")
         
         return conversation_id
         
     except Exception as e:
-        print(f"❌ Error guardando conversación completa: {e}")
+        print(f"Error guardando conversación completa: {e}")
         return None
 
 def mostrar_sidebar():
     """Mostrar la barra lateral con configuraciones y estado"""
     with st.sidebar:
-        st.header("⚙️ Configuración")
+        st.header("Configuración")
         
         # Verificar configuración
         try:
             Config.validate_config()
-            st.success("✅ Configuración válida")
+            st.success("Configuración válida")
             config_ok = True
         except ValueError as e:
-            st.error(f"❌ Error en configuración: {e}")
+            st.error(f"Error en configuración: {e}")
             config_ok = False
         
         # Estado de la base de datos
-        st.markdown("### 🗄️ Estado de la Base de Datos")
+        st.markdown("Estado de la Base de Datos")
         if st.session_state.get('db_connected', False):
-            st.success("✅ Conectado a Supabase")
+            st.success("Conectado a Supabase")
             
             # Mostrar estadísticas básicas
             if st.session_state.db_client:
@@ -166,16 +166,16 @@ def mostrar_sidebar():
                     if stats:
                         col1, col2, col3 = st.columns(3)
                         with col1:
-                            st.metric("📊 Leads", stats.get('total_leads', 0))
+                            st.metric("Leads", stats.get('total_leads', 0))
                         with col2:
-                            st.metric("💬 Conversaciones", stats.get('total_conversations', 0))
+                            st.metric("Conversaciones", stats.get('total_conversations', 0))
                         with col3:
-                            st.metric("⭐ Alta Calidad", stats.get('high_quality_leads', 0))
+                            st.metric("Alta Calidad", stats.get('high_quality_leads', 0))
                 except Exception as e:
                     st.error(f"Error obteniendo stats: {e}")
             
             # Sección de gestión de conversaciones
-            st.markdown("### 💾 Gestión de Conversaciones")
+            st.markdown("Gestión de Conversaciones")
             
             # Información de la conversación actual
             if st.session_state.context_manager and st.session_state.context_manager.current_context:
@@ -186,14 +186,14 @@ def mostrar_sidebar():
                 
                 with col1:
                     # Botón para guardar conversación completa
-                    if st.button("💾 Guardar", help="Guarda toda la conversación en la BD"):
+                    if st.button("Guardar", help="Guarda toda la conversación en la BD"):
                         if st.session_state.context_manager and len(st.session_state.conversation_history) > 0:
                             with st.spinner("Guardando conversación..."):
                                 result = guardar_conversacion_completa()
                                 if result:
-                                    st.success(f"✅ Guardada (ID: {result[:8]}...)")
+                                    st.success(f"Guardada (ID: {result[:8]}...)")
                                 else:
-                                    st.error("❌ Error guardando")
+                                    st.error("Error guardando")
                         else:
                             st.warning("No hay conversación para guardar")
                 
@@ -203,27 +203,27 @@ def mostrar_sidebar():
             else:
                 st.info("Inicia una conversación para habilitar guardado")
         else:
-            st.warning("⚠️ Base de datos no disponible")
+            st.warning("Base de datos no disponible")
             st.caption("La aplicación funciona sin BD")
         
         # Estado del agente
-        st.markdown("### 🤖 Estado del Agente")
+        st.markdown("Estado del Agente")
         if (st.session_state.gemini_client and 
             st.session_state.speech_to_text and 
             st.session_state.text_to_speech):
-            st.success("🟢 Agente Funcionando")
+            st.success("Agente Funcionando")
             st.caption("IA, STT y TTS funcionando")
         else:
-            st.error("🔴 Agente con Problemas")
+            st.error("Agente con Problemas")
             if not st.session_state.gemini_client:
-                st.caption("❌ Error en cliente IA")
+                st.caption("Error en cliente IA")
             if not st.session_state.speech_to_text:
-                st.caption("❌ Error en Speech-to-Text")
+                st.caption("Error en Speech-to-Text")
             if not st.session_state.text_to_speech:
-                st.caption("❌ Error en Text-to-Speech")
+                st.caption("Error en Text-to-Speech")
         
         # Estado del Context Manager  
-        st.markdown("### 🧠 Contexto Inteligente")
+        st.markdown("Contexto Inteligente")
         if st.session_state.context_manager and st.session_state.context_manager.current_context:
             ctx = st.session_state.context_manager.current_context
             col1, col2 = st.columns(2)
@@ -245,19 +245,19 @@ def mostrar_sidebar():
                 st.write(f"**Engagement:** {engagement_color.get(level, '⚪')} {level.title()}")
         
         # Estado del sistema TTS
-        st.markdown("### 🎤 Estado de Voz")
+        st.markdown("Estado de Voz")
         if st.session_state.text_to_speech:
             tts_status = st.session_state.text_to_speech.get_tts_status()
             st.info(tts_status["message"])
             
             # Mostrar información sobre pyttsx3
             if tts_status["pyttsx3"]:
-                st.success("🎯 Sistema de voz básico activo")
+                st.success("Sistema de voz básico activo")
             else:
-                st.warning("⚠️ Sistema de voz no disponible")
+                st.warning("Sistema de voz no disponible")
         
         # Estadísticas
-        st.markdown("### 📈 Estadísticas de Sesión")
+        st.markdown("Estadísticas de Sesión")
         total_mensajes = len(st.session_state.conversation_history)
         mensajes_usuario = len([m for m in st.session_state.conversation_history if m['role'] == 'user'])
         mensajes_agente = len([m for m in st.session_state.conversation_history if m['role'] == 'assistant'])
@@ -271,13 +271,13 @@ def mostrar_sidebar():
             st.metric("Sesiones", 1)
         
         # Configuraciones de voz
-        st.markdown("### 🔊 Configuración de Voz")
+        st.markdown("Configuración de Voz")
         if st.session_state.text_to_speech and st.session_state.text_to_speech.is_available():
-            st.success("✅ TTS Disponible")
+            st.success("TTS Disponible")
             
             # Toggle para reproducción automática
             auto_speak = st.checkbox(
-                "🔊 Reproducir automáticamente", 
+                "Reproducir automáticamente", 
                 value=st.session_state.get('auto_speak', False),
                 help="Reproduce las respuestas del agente automáticamente"
             )
@@ -288,13 +288,13 @@ def mostrar_sidebar():
             if voices:
                 st.info(f"Voces disponibles: {len(voices)}")
         else:
-            st.warning("⚠️ TTS no disponible")
+            st.warning("TTS no disponible")
         
         # Botones de control
-        st.markdown("### 🎛️ Controles")
-        if st.button("🗑️ Limpiar Chat", help="Eliminar todo el historial"):
+        st.markdown("Controles generales: ")
+        if st.button("Limpiar Chat", help="Eliminar todo el historial"):
             st.session_state.conversation_history = []
-            st.success("✅ Chat limpiado")
+            st.success("Chat limpiado")
             time.sleep(1)
             st.rerun()
         
@@ -302,7 +302,7 @@ def mostrar_sidebar():
 
 def mostrar_conversacion():
     """Mostrar el historial de conversación"""
-    st.header("💬 Conversación con el Agente")
+    st.header("Conversación con el Agente")
     
     # Contenedor del chat
     chat_container = st.container()
@@ -330,10 +330,10 @@ def mostrar_conversacion():
             st.info("¡Hola! Soy tu agente de IA especializado en lead generation. Puedes comunicarte conmigo escribiendo un mensaje o subiendo un archivo de audio.")
             st.markdown("""
             **¿Qué puedo hacer por ti?**
-            - 📝 Responder preguntas sobre productos/servicios
-            - 🔍 Recopilar información sobre tus necesidades
-            - 💼 Ayudarte a encontrar la solución perfecta
-            - 📊 Analizar tu perfil como prospecto
+            -Responder preguntas sobre productos/servicios
+            -Recopilar información sobre tus necesidades
+            -Ayudarte a encontrar la solución perfecta
+            -Analizar tu perfil como prospecto
             """)
 
 def procesar_mensaje(contenido, tipo="texto"): # type: ignore
@@ -394,10 +394,10 @@ def procesar_mensaje(contenido, tipo="texto"): # type: ignore
 
 def mostrar_controles_input():
     """Mostrar controles para enviar mensajes"""
-    st.header("📝 Envía tu Mensaje")
+    st.header("Envía tu Mensaje")
     
     # Pestañas para diferentes tipos de input
-    tab1, tab2 = st.tabs(["✍️ Texto", "🎤 Audio"])
+    tab1, tab2 = st.tabs(["Texto", "Audio"])
     
     with tab1:
         st.markdown("### Escribe tu mensaje")
@@ -407,11 +407,11 @@ def mostrar_controles_input():
             height=100
         )
         
-        if st.button("📤 Enviar Mensaje", type="primary", key="enviar_texto"):
+        if st.button("Enviar Mensaje", type="primary", key="enviar_texto"):
             if texto_input.strip():
                 with st.spinner("Procesando mensaje..."):
                     procesar_mensaje(texto_input.strip(), "texto")
-                    st.success("✅ Mensaje enviado")
+                    st.success("Mensaje enviado")
                     time.sleep(0.5)
                     st.rerun()
             else:
@@ -419,7 +419,7 @@ def mostrar_controles_input():
     
     with tab2:
         # Sub-pestañas para diferentes tipos de audio
-        audio_tab1, audio_tab2 = st.tabs(["📁 Subir Audio", "🎙️ Grabar Audio"])
+        audio_tab1, audio_tab2 = st.tabs(["Subir Audio", "Grabar Audio"])
         
         with audio_tab1:
             st.markdown("### Sube un archivo de audio")
@@ -433,9 +433,9 @@ def mostrar_controles_input():
         
         if uploaded_audio is not None:
             st.audio(uploaded_audio, format=uploaded_audio.type)
-            st.success(f"📁 Archivo cargado: {uploaded_audio.name}")
+            st.success(f"Archivo cargado: {uploaded_audio.name}")
             
-            if st.button("🔄 Procesar Audio", type="primary", key="procesar_audio"):
+            if st.button("Procesar Audio", type="primary", key="procesar_audio"):
                 if st.session_state.speech_to_text is None:
                     st.error("Sistema de transcripción no disponible")
                 else:
@@ -445,22 +445,22 @@ def mostrar_controles_input():
                         
                         if texto_transcrito and not texto_transcrito.startswith("Error") and not texto_transcrito.startswith("No se pudo"):
                             # Mostrar transcripción
-                            st.success(f"📝 Transcripción: {texto_transcrito}")
+                            st.success(f"Transcripción: {texto_transcrito}")
                             
                             # Procesar mensaje
                             procesar_mensaje(texto_transcrito, "audio")
-                            st.success("✅ Audio transcrito y procesado")
+                            st.success("Audio transcrito y procesado")
                             time.sleep(0.5)
                             st.rerun()
                         else:
-                            st.error(f"❌ {texto_transcrito}")
+                            st.error(f"{texto_transcrito}")
         
         with audio_tab2:
             st.markdown("### Grabación desde micrófono")
             
             # Verificar si hay micrófono disponible
             if st.session_state.speech_to_text and st.session_state.speech_to_text.is_microphone_available():
-                st.success("🎤 Micrófono detectado")
+                st.success("Micrófono detectado")
                 
                 # Configuración de grabación
                 col1, col2 = st.columns(2)
@@ -469,7 +469,7 @@ def mostrar_controles_input():
                 with col2:
                     st.write("")  # Espaciado
                 
-                if st.button("🔴 Empezar Grabación", type="primary", key="record_audio"):
+                if st.button("Empezar Grabación", type="primary", key="record_audio"):
                     if st.session_state.speech_to_text is None:
                         st.error("Sistema de transcripción no disponible")
                     else:
@@ -478,15 +478,15 @@ def mostrar_controles_input():
                         
                         if texto_transcrito and not texto_transcrito.startswith("Error") and not texto_transcrito.startswith("No se pudo") and not texto_transcrito.startswith("Tiempo"):
                             # Mostrar transcripción
-                            st.success(f"📝 Transcripción: {texto_transcrito}")
+                            st.success(f"Transcripción: {texto_transcrito}")
                             
                             # Procesar mensaje
                             procesar_mensaje(texto_transcrito, "audio_live")
-                            st.success("✅ Audio grabado, transcrito y procesado")
+                            st.success("Audio grabado, transcrito y procesado")
                             time.sleep(0.5)
                             st.rerun()
                         else:
-                            st.warning(f"⚠️ {texto_transcrito}")
+                            st.warning(f"{texto_transcrito}")
             else:
                 st.warning("No se detectó micrófono o el sistema de audio no está disponible")
                 st.info("Asegúrate de que tu micrófono esté conectado y funcionando")
@@ -505,7 +505,7 @@ def main():
     
     # Título principal con estilo
     st.markdown("""
-    # 🤖 AI Agent de Voz para Lead Generation
+    #AI Agent de Voz para Lead Generation
     ### *Convierte conversaciones en oportunidades de negocio*
     """)
     st.markdown("---")
@@ -514,7 +514,7 @@ def main():
     config_ok = mostrar_sidebar()
     
     if not config_ok:
-        st.error("⚠️ La aplicación no puede funcionar sin una configuración válida. Revisa las variables de entorno en el archivo .env")
+        st.error("La aplicación no puede funcionar sin una configuración válida. Revisa las variables de entorno en el archivo .env")
         st.stop()
     
     # Layout principal
@@ -530,7 +530,7 @@ def main():
     st.markdown("---")
     st.markdown("""
     <div style='text-align: center; color: #666;'>
-        <p><strong>🚀 Copyright Santiago Gamborino © 2025 </strong></p>
+        <p><strong>Copyright Santiago Gamborino © 2025 </strong></p>
         <p>Powered by Streamlit • Google Gemini • Supabase</p>
     </div>
     """, unsafe_allow_html=True)

@@ -1,0 +1,121 @@
+{
+  "session_id": "session_1758938013047",
+  "lead_id": "13b11cbd-d4ac-473c-b960-9b81e6d13a2b",
+  "start_time": 1758938013.0478683,
+  "last_activity": 1758938039.8593757,
+  "current_phase": "presentation",
+  "messages": [
+    {
+      "id": "msg_0_1758938013048",
+      "role": "user",
+      "content": "Hola, me llamo Carlos Mendoza y soy CTO de InnovaTech Solutions. Estamos buscando ayuda con automatización de marketing.",
+      "message_type": "user_text",
+      "timestamp": 1758938013.0481236,
+      "metadata": {}
+    },
+    {
+      "id": "msg_1_1758938017298",
+      "role": "assistant",
+      "content": "¡Hola Carlos! Es un gusto saludarte. Soy tu agente de atención al cliente de AOVA, y es un placer conversar con el CTO de InnovaTech Solutions.\n\nEntiendo perfectamente que estén buscando ayuda con la automatización de marketing. ¡Esa es precisamente nuestra área de especialización! En AOVA, nos enfocamos en crear sistemas fluidos y escalables.\n\nPara empezar a ayudarte de la mejor manera, me gustaría entender un poco más sobre sus necesidades:\n\n¿Están buscando una solución completa para implementar desde cero, o ya tienen algunas herramientas y están buscando integrarlas o hacerlas más eficientes?\n\nCuéntame qué desafíos específicos están intentando resolver, y con gusto te guiaré a través de cómo AOVA puede asistirlos.",
+      "message_type": "agent_response",
+      "timestamp": 1758938017.298364,
+      "metadata": {}
+    },
+    {
+      "id": "msg_2_1758938017799",
+      "role": "user",
+      "content": "Somos una startup de 35 empleados en el sector fintech. Nuestro principal problema es que no tenemos un sistema para nutrir leads automáticamente.",
+      "message_type": "user_text",
+      "timestamp": 1758938017.799312,
+      "metadata": {}
+    },
+    {
+      "id": "msg_3_1758938019023",
+      "role": "assistant",
+      "content": "¡Hola! Soy tu agente inteligente de AOVA, y estoy aquí para ayudarte hoy.\n\nEntiendo perfectamente la situación. En el sector fintech, donde la confianza y la educación del cliente son clave, no tener un sistema robusto para nutrir *leads* automáticamente puede ser un cuello de botella importante, especialmente para una startup en crecimiento como la vuestra.\n\nMe gustaría saber un poco más para poder ofrecerte la mejor información:\n\n¿Qué herramientas o plataformas de CRM están utilizando actualmente, si es que tienen alguna? Y, ¿cuál es el volumen aproximado de leads que están generando mensualmente?",
+      "message_type": "agent_response",
+      "timestamp": 1758938019.0233934,
+      "metadata": {}
+    },
+    {
+      "id": "msg_4_1758938019524",
+      "role": "user",
+      "content": "Necesitamos implementar algo antes de fin de año, y tenemos un presupuesto de alrededor de 20,000 dólares para este proyecto.",
+      "message_type": "user_text",
+      "timestamp": 1758938019.5245311,
+      "metadata": {}
+    },
+    {
+      "id": "msg_5_1758938023380",
+      "role": "assistant",
+      "content": "¡Hola! Me parece excelente que ya tengan claros el plazo y el presupuesto. Eso nos ayuda muchísimo a enfocar la solución ideal.\n\nEntiendo que el objetivo principal es implementar un sistema robusto para nutrir leads automáticamente, ya que esa es su preocupación principal.\n\nQuiero asegurarle que tanto el plazo de fin de año como el presupuesto de $20,000 son realistas para establecer una plataforma de automatización de marketing y ventas potente aquí en AOVA.\n\nPara que podamos diseñar un plan de implementación que cumpla con ese plazo y se ajuste perfectamente a sus necesidades, ¿podría contarme un poco más sobre qué funcionalidades específicas (además de la nutrición automática) son imprescindibles para ustedes en este nuevo sistema? Por ejemplo, ¿necesitan integración con algún CRM actual o herramientas de reporte específicas?",
+      "message_type": "agent_response",
+      "timestamp": 1758938023.380968,
+      "metadata": {}
+    },
+    {
+      "id": "msg_6_1758938023881",
+      "role": "user",
+      "content": "¿Podrían mostrarme cómo funciona su plataforma? Me interesa ver casos de éxito similares al nuestro.",
+      "message_type": "user_text",
+      "timestamp": 1758938023.881899,
+      "metadata": {}
+    },
+    {
+      "id": "msg_7_1758938028599",
+      "role": "assistant",
+      "content": "¡Hola! Esa es una excelente pregunta y un paso muy importante. Ver la plataforma en acción y cómo ha ayudado a otras empresas es la mejor manera de evaluar si somos el *fit* adecuado.\n\nMe encantará mostrarle cómo funciona AOVA.\n\nDado que su principal preocupación es implementar un sistema robusto para la **nutrición automática de leads** —y que necesitamos tener esto listo antes de fin de año con un presupuesto de alrededor de $20,000—, podemos hacer dos cosas:\n\n1.  **Demostración Focalizada:** Podemos enfocar la demostración de la plataforma específicamente en el módulo de automatización de marketing y nutrición. Así verá en tiempo real cómo se configuran las secuencias de correos, la segmentación y las reglas de puntuación (*lead scoring*) que le permitirán automatizar ese proceso clave.\n2.  **Casos de Éxito Relevantes:** Por supuesto, incluiré ejemplos y casos de éxito que se asemejen a su situación, especialmente aquellos que lograron una implementación rápida y resultados significativos dentro de un marco presupuestario similar.\n\nPara coordinar esto y asegurarnos de que la presentación esté 100% adaptada a sus necesidades, ¿prefiere que le enviemos un video introductorio primero, o coordinamos directamente una sesión interactiva de 30 minutos la próxima semana?",
+      "message_type": "agent_response",
+      "timestamp": 1758938028.5992718,
+      "metadata": {}
+    },
+    {
+      "id": "msg_8_1758938029100",
+      "role": "user",
+      "content": "Me preocupa un poco la integración con nuestros sistemas existentes. ¿Qué tan complejo sería?",
+      "message_type": "user_text",
+      "timestamp": 1758938029.100569,
+      "metadata": {}
+    },
+    {
+      "id": "msg_9_1758938033808",
+      "role": "assistant",
+      "content": "Esa es una preocupación totalmente válida, y me alegra que la mencione. La integración es, sin duda, uno de los factores más críticos para el éxito de cualquier implementación.\n\nLe puedo asegurar que en AOVA hemos puesto mucho esfuerzo en que nuestros sistemas sean lo más flexibles y compatibles posible. Generalmente, la complejidad de la integración depende de dos factores:\n\n1.  **Los sistemas que ya tienen:** Si usan herramientas estándar (como ciertos CRMs o ERPs populares), a menudo tenemos conectores nativos o preconfigurados que simplifican mucho el proceso.\n2.  **El nivel de profundidad que necesiten:** No es lo mismo sincronizar solo datos de contacto que automatizar flujos complejos de datos transaccionales.\n\nUtilizamos APIs robustas y estándares de la industria para asegurar una comunicación fluida. **En la mayoría de los casos, la integración es bastante directa y no requiere de una programación intensiva.**\n\nPara darle una respuesta más precisa sobre la complejidad y el tiempo que implicaría, ¿podría compartir conmigo qué sistemas específicos están utilizando actualmente para la gestión de clientes o el marketing? Por ejemplo, ¿qué CRM tienen?",
+      "message_type": "agent_response",
+      "timestamp": 1758938033.8085573,
+      "metadata": {}
+    },
+    {
+      "id": "msg_10_1758938034309",
+      "role": "user",
+      "content": "Perfecto, creo que es justo lo que necesitamos. ¿Cuáles serían los próximos pasos? Mi email es carlos.mendoza@innovatech.com",
+      "message_type": "user_text",
+      "timestamp": 1758938034.309535,
+      "metadata": {}
+    },
+    {
+      "id": "msg_11_1758938039859",
+      "role": "assistant",
+      "content": "¡Excelente! Me alegra muchísimo que la solución que hemos discutido sea exactamente lo que Innovatech necesita para impulsar esa nutrición automática de leads.\n\nGracias por compartir su email, carlos.mendoza@innovatech.com. Lo tengo anotado.\n\nLos próximos pasos son cruciales para asegurar que logremos la implementación antes de fin de año y dentro de ese presupuesto de $20,000.\n\nAquí le detallo cómo procederemos:\n\n1.  **Sesión de Descubrimiento de Integración (Focus en la Preocupación):** Sé que le preocupa la integración con sus sistemas existentes. Para mitigar cualquier riesgo y darle una estimación precisa de la complejidad, necesitamos una reunión de 30 minutos con su equipo técnico. Esto nos permitirá mapear específicamente cómo conectaremos el nuevo sistema de nutrición de leads.\n2.  **Propuesta Formal y Cronograma:** Una vez que tengamos esa información clara, prepararé y le enviaré una propuesta formal. Esta incluirá el alcance detallado, el cronograma exacto para cumplir con el *deadline* de fin de año, y el desglose de costos.\n3.  **Lanzamiento y Ejecución Rápida.**\n\nPara no perder tiempo, ¿le parece bien si le envío un par de opciones de horarios para esa reunión de Descubrimiento de Integración la próxima semana? Así podemos avanzar rápidamente hacia la propuesta formal.",
+      "message_type": "agent_response",
+      "timestamp": 1758938039.859371,
+      "metadata": {}
+    }
+  ],
+  "summary": {
+    "key_points": [],
+    "mentioned_needs": [
+      "necesitamos implementar algo antes de fin de año, y tenemos un presupuesto de alrededor de 20,000 dólares para este proyecto",
+      "¿qué tan complejo sería? perfecto, creo que es justo lo que necesitamos"
+    ],
+    "objections_raised": [
+      "nuestro principal problema es que no tenemos un sistema para nutrir leads automáticamente",
+      "me preocupa un poco la integración con nuestros sistemas existentes"
+    ],
+    "interests_shown": [],
+    "next_actions": [],
+    "last_updated": 1758938034.3097727
+  },
+  "lead_info": {},
+  "total_interactions": 12
+}
