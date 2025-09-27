@@ -72,7 +72,7 @@ def inicializar_sesion():
             if not hasattr(st.session_state, 'current_session_id'):
                 session_id = st.session_state.context_manager.start_new_conversation()
                 st.session_state.current_session_id = session_id
-                print(f"Nueva conversación iniciada: {session_id}")
+                print(f"✅ Nueva conversación iniciada: {session_id}")
         except Exception as e:
             st.error(f"Error inicializando Context Manager: {e}")
             st.session_state.context_manager = None
@@ -80,21 +80,21 @@ def inicializar_sesion():
 def mostrar_sidebar():
     """Mostrar la barra lateral con configuraciones y estado"""
     with st.sidebar:
-        st.header("Configuración")
+        st.header("⚙️ Configuración")
         
         # Verificar configuración
         try:
             Config.validate_config()
-            st.success("Configuración válida")
+            st.success("✅ Configuración válida")
             config_ok = True
         except ValueError as e:
-            st.error(f"Error en configuración: {e}")
+            st.error(f"❌ Error en configuración: {e}")
             config_ok = False
         
         # Estado de la base de datos
         st.markdown("### 🗄️ Base de Datos")
         if st.session_state.get('db_connected', False):
-            st.success("Conectado a Supabase")
+            st.success("✅ Conectado a Supabase")
             
             # Mostrar estadísticas básicas
             if st.session_state.db_client:
@@ -108,50 +108,36 @@ def mostrar_sidebar():
                     st.error(f"Error obteniendo stats: {e}")
             
             # Botón para guardar conversación actual
-            if st.button("Guardar Conversación"):
-                try:
-                    # Guardar lead si hay información disponible
-                    lead_id = None
-                    if st.session_state.lead_info:
-                        lead_id = st.session_state.db_client.create_lead(st.session_state.lead_info)
-                        if lead_id:
-                            st.success(f"Lead guardado")
-                    
-                    # Guardar conversación usando Context Manager
-                    if st.session_state.context_manager:
-                        result = st.session_state.context_manager.save_conversation_to_db()
-                        if result:
-                            st.success("Conversación guardada")
-                        else:
-                            st.error("Error guardando conversación")
+            if st.button("💾 Guardar Conversación"):
+                if st.session_state.context_manager:
+                    result = st.session_state.context_manager.save_conversation_to_db()
+                    if result:
+                        st.success("Conversación guardada")
                     else:
-                        st.warning("Context Manager no disponible")
-                        
-                except Exception as e:
-                    st.error(f"Error durante el guardado: {str(e)}")
+                        st.error("Error guardando conversación")
         else:
-            st.warning("Base de datos no disponible")
+            st.warning("⚠️ Base de datos no disponible")
             st.caption("La aplicación funciona sin BD")
         
-        st.markdown("###Estado del Agente")
+        st.markdown("### 📊 Estado del Agente")
         # Estado informativo basado en la disponibilidad de los servicios
         if (st.session_state.gemini_client and 
             st.session_state.speech_to_text and 
             st.session_state.text_to_speech):
-            st.success("Agente Operativo")
-            st.caption("IA, STT y TTS funcionando")
+            st.success("🟢 Agente Operativo")
+            st.caption("✅ IA, STT y TTS funcionando")
         else:
-            st.error("Agente con Problemas")
+            st.error("🔴 Agente con Problemas")
             # Mostrar qué componentes fallan
             if not st.session_state.gemini_client:
-                st.caption("Error en cliente IA")
+                st.caption("❌ Error en cliente IA")
             if not st.session_state.speech_to_text:
-                st.caption("Error en Speech-to-Text")
+                st.caption("❌ Error en Speech-to-Text")
             if not st.session_state.text_to_speech:
-                st.caption("Error en Text-to-Speech")
+                st.caption("❌ Error en Text-to-Speech")
         
         # Información del lead actual - Vista mejorada
-        st.markdown("### Información del Lead")
+        st.markdown("### 👤 Información del Lead")
         if st.session_state.lead_info:
             # Mostrar análisis de calidad si existe
             analisis = st.session_state.lead_info.get('analisis', {})
@@ -162,13 +148,13 @@ def mostrar_sidebar():
                 
                 # Mostrar puntuación con color según calidad
                 if score >= 80:
-                    st.success(f"{quality} ({score}/100)")
+                    st.success(f"🔥 {quality} ({score}/100)")
                 elif score >= 60:
-                    st.warning(f"{quality} ({score}/100)")
+                    st.warning(f"🔶 {quality} ({score}/100)")
                 elif score >= 40:
-                    st.info(f"{quality} ({score}/100)")
+                    st.info(f"❄️ {quality} ({score}/100)")
                 else:
-                    st.error(f"{quality} ({score}/100)")
+                    st.error(f"❌ {quality} ({score}/100)")
             
             # Información personal
             personal = st.session_state.lead_info.get('informacion_personal', {})
@@ -190,7 +176,7 @@ def mostrar_sidebar():
             necesidades = st.session_state.lead_info.get('necesidades', {})
             if necesidades and necesidades.get('descripcion'):
                 st.markdown("**Necesidades:**")
-                st.text_area("Descripción de necesidades", necesidades['descripcion'], height=60, disabled=True, label_visibility="collapsed")
+                st.text_area("", necesidades['descripcion'], height=60, disabled=True)
             
             # Información comercial
             comercial = st.session_state.lead_info.get('comercial', {})
@@ -202,20 +188,20 @@ def mostrar_sidebar():
                         
             # Próximos pasos recomendados
             if analisis and analisis.get('next_steps'):
-                with st.expander("Próximos Pasos Recomendados"):
+                with st.expander("📋 Próximos Pasos Recomendados"):
                     for i, step in enumerate(analisis['next_steps'], 1):
                         st.write(f"{i}. {step}")
                         
             # Información faltante
             if analisis and analisis.get('missing_info'):
-                with st.expander("Información Faltante"):
+                with st.expander("❓ Información Faltante"):
                     for info in analisis['missing_info']:
                         st.write(f"• {info}")
         else:
             st.info("No hay información de lead capturada")
         
         # Estado del Context Manager  
-        st.markdown("### Contexto Inteligente")
+        st.markdown("### 🧠 Contexto Inteligente")
         if st.session_state.context_manager and st.session_state.context_manager.current_context:
             ctx = st.session_state.context_manager.current_context
             col1, col2 = st.columns(2)
@@ -240,26 +226,22 @@ def mostrar_sidebar():
         st.markdown("### 🎤 Estado de Voz")
         if st.session_state.text_to_speech:
             tts_status = st.session_state.text_to_speech.get_tts_status()
-            if tts_status["pyttsx3"]:
-                st.success(tts_status["message"])
-            else:
-                st.error(tts_status["message"])
-                
-            with st.expander("Información del Sistema TTS"):
-                st.markdown("""
-                **Sistema Actual:** pyttsx3 (Voz básica local)
-                
-                **Características:**
-                - Funciona sin conexión a internet
-                - Sin costos adicionales
-                - Voces del sistema operativo
-                - Configuración automática en español
-                """)
-        else:
-            st.error("Sistema TTS no disponible")
+            st.info(tts_status["message"])
+            
+            if tts_status["google_cloud"] == "no_configurado":
+                with st.expander("💡 Mejorar calidad de voz"):
+                    st.markdown("""
+                    **Para obtener voz más natural:**
+                    1. 📖 Lee las instrucciones en `CONFIGURAR_TTS.md`
+                    2. 🔑 Configura credenciales de Google Cloud
+                    3. 🎯 Disfruta de voz profesional
+                    
+                    **Actual:** Voz básica (pyttsx3)  
+                    **Con Google Cloud:** Voz natural profesional
+                    """)
         
         # Estadísticas
-        st.markdown("### Estadísticas de Sesión")
+        st.markdown("### 📈 Estadísticas de Sesión")
         total_mensajes = len(st.session_state.conversation_history)
         mensajes_usuario = len([m for m in st.session_state.conversation_history if m['role'] == 'user'])
         mensajes_agente = len([m for m in st.session_state.conversation_history if m['role'] == 'assistant'])
@@ -273,13 +255,13 @@ def mostrar_sidebar():
             st.metric("Datos", len(st.session_state.lead_info))
         
         # Configuraciones de voz
-        st.markdown("### Configuración de Voz")
+        st.markdown("### 🗣️ Configuración de Voz")
         if st.session_state.text_to_speech and st.session_state.text_to_speech.is_available():
-            st.success("TTS Disponible")
+            st.success("✅ TTS Disponible")
             
             # Toggle para reproducción automática
             auto_speak = st.checkbox(
-                "Reproducir respuestas automáticamente", 
+                "🔊 Reproducir respuestas automáticamente", 
                 value=st.session_state.get('auto_speak', False),
                 help="Reproduce las respuestas del agente automáticamente"
             )
@@ -288,84 +270,27 @@ def mostrar_sidebar():
             # Mostrar voces disponibles
             voices = st.session_state.text_to_speech.get_available_voices()
             if voices:
-                st.info(f"Voces disponibles: {len(voices)}")
+                st.info(f"🎤 Voces disponibles: {len(voices)}")
         else:
-            st.warning("TTS no disponible")
+            st.warning("⚠️ TTS no disponible")
         
         # Botones de control
-        st.markdown("### Controles")
-        
-        # Mostrar resumen de datos a guardar
-        if st.session_state.conversation_history or st.session_state.lead_info:
-            with st.expander("📊 Resumen de Datos a Guardar"):
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.metric("Mensajes", len(st.session_state.conversation_history))
-                    if st.session_state.lead_info.get('analisis', {}).get('score', 0) > 0:
-                        score = st.session_state.lead_info['analisis']['score']
-                        st.metric("Score del Lead", f"{score}/100")
-                
-                with col2:
-                    personal_info = st.session_state.lead_info.get('personal', {}) or st.session_state.lead_info.get('informacion_personal', {})
-                    if personal_info.get('nombre'):
-                        st.write("👤 **Lead identificado**")
-                        st.write(f"Nombre: {personal_info['nombre']}")
-                    
-                    if st.session_state.get('current_session_id'):
-                        st.write("**ID de Sesión**")
-                        st.code(st.session_state.current_session_id, language=None)
-        
-        if st.button("Limpiar Conversación", help="Eliminar todo el historial"):
+        st.markdown("### 🎛️ Controles")
+        if st.button("🗑️ Limpiar Conversación", help="Eliminar todo el historial"):
             st.session_state.conversation_history = []
             st.session_state.lead_info = {}
             st.success("Conversación limpiada")
             time.sleep(1)
             st.rerun()
         
-        if st.button("Guardar Sesión", help="Guardar en base de datos"):
-            if st.session_state.get('db_connected', False) and st.session_state.db_client:
-                try:
-                    # Guardar lead si hay información disponible
-                    lead_id = None
-                    if st.session_state.lead_info:
-                        lead_id = st.session_state.db_client.create_lead(st.session_state.lead_info)
-                        if lead_id:
-                            st.success(f"Lead guardado con ID: {lead_id}")
-                        else:
-                            st.warning("No se pudo guardar la información del lead")
-                    
-                    # Guardar conversación
-                    if st.session_state.context_manager and st.session_state.current_session_id:
-                        conversation_data = {
-                            'session_id': st.session_state.current_session_id,
-                            'messages': st.session_state.conversation_history,
-                            'lead_info': st.session_state.lead_info,
-                            'total_interactions': len(st.session_state.conversation_history),
-                            'lead_id': lead_id
-                        }
-                        
-                        conversation_id = st.session_state.db_client.save_conversation(
-                            st.session_state.current_session_id, 
-                            conversation_data
-                        )
-                        
-                        if conversation_id:
-                            st.success(f"Conversación guardada con ID: {conversation_id}")
-                            st.balloons()  # Efecto visual de éxito
-                        else:
-                            st.error("Error guardando la conversación")
-                    
-                except Exception as e:
-                    st.error(f"Error durante el guardado: {str(e)}")
-            else:
-                st.warning("Base de datos no disponible. No se puede guardar la sesión.")
-                st.info("La conversación se mantiene en memoria durante esta sesión.")
+        if st.button("💾 Guardar Sesión", help="Guardar en base de datos"):
+            st.info("Función de guardado pendiente de implementar")
         
         return config_ok
 
 def mostrar_conversacion():
     """Mostrar el historial de conversación"""
-    st.header("Conversación con el Lead")
+    st.header("💬 Conversación con el Lead")
     
     # Contenedor del chat
     chat_container = st.container()
@@ -381,9 +306,9 @@ def mostrar_conversacion():
                         with col1:
                             st.write(f"**Agente IA:** {message['content']}")
                         with col2:
-                            if st.button("Audio", key=f"speak_{i}", help="Reproducir respuesta"):
+                            if st.button("🔊", key=f"speak_{i}", help="Reproducir respuesta"):
                                 if st.session_state.text_to_speech and st.session_state.text_to_speech.is_available():
-                                    with st.spinner(" Reproduciendo..."):
+                                    with st.spinner("🗣️ Reproduciendo..."):
                                         success = st.session_state.text_to_speech.speak_text(message['content'])
                                         if not success:
                                             st.error("Error reproduciendo audio")
@@ -393,10 +318,10 @@ def mostrar_conversacion():
             st.info("👋 ¡Hola! Soy tu agente de IA especializado en lead generation. Puedes comunicarte conmigo escribiendo un mensaje o subiendo un archivo de audio.")
             st.markdown("""
             **¿Qué puedo hacer por ti?**
-            - Responder preguntas sobre productos/servicios
-            - Recopilar información sobre tus necesidades
-            - Ayudarte a encontrar la solución perfecta
-            - Analizar tu perfil como prospecto
+            - 📝 Responder preguntas sobre productos/servicios
+            - 🔍 Recopilar información sobre tus necesidades
+            - 💼 Ayudarte a encontrar la solución perfecta
+            - 📊 Analizar tu perfil como prospecto
             """)
 
 def procesar_mensaje(contenido, tipo="texto"):
@@ -453,9 +378,9 @@ def procesar_mensaje(contenido, tipo="texto"):
                         # Mostrar notificación si es un lead de alta calidad
                         score = lead_analysis.get('score', 0)
                         if score >= 80:
-                            st.success(f"Lead de alta calidad detectado! Puntuación: {score}/100")
+                            st.success(f"🎯 Lead de alta calidad detectado! Puntuación: {score}/100")
                         elif score >= 60:
-                            st.info(f"Lead potencial identificado. Puntuación: {score}/100")
+                            st.info(f"📊 Lead potencial identificado. Puntuación: {score}/100")
                         
                 except Exception as e:
                     print(f"Error extrayendo información: {e}")
@@ -484,10 +409,10 @@ def procesar_mensaje(contenido, tipo="texto"):
 
 def mostrar_controles_input():
     """Mostrar controles para enviar mensajes"""
-    st.header("Envía tu Mensaje")
+    st.header("🎙️ Envía tu Mensaje")
     
     # Pestañas para diferentes tipos de input
-    tab1, tab2 = st.tabs(["Texto", "Audio"])
+    tab1, tab2 = st.tabs(["📝 Texto", "🎵 Audio"])
     
     with tab1:
         st.markdown("### Escribe tu mensaje")
@@ -497,15 +422,15 @@ def mostrar_controles_input():
             height=100
         )
         
-        if st.button("Enviar Mensaje", type="primary", key="enviar_texto"):
+        if st.button("📤 Enviar Mensaje", type="primary", key="enviar_texto"):
             if texto_input.strip():
                 with st.spinner("Procesando mensaje..."):
                     procesar_mensaje(texto_input.strip(), "texto")
-                    st.success("Mensaje enviado")
+                    st.success("✅ Mensaje enviado")
                     time.sleep(0.5)
                     st.rerun()
             else:
-                st.warning("Por favor escribe un mensaje.")
+                st.warning("⚠️ Por favor escribe un mensaje.")
     
     with tab2:
         # Sub-pestañas para diferentes tipos de audio
@@ -513,7 +438,7 @@ def mostrar_controles_input():
         
         with audio_tab1:
             st.markdown("### Sube un archivo de audio")
-            st.info("**Recomendación**: Usa archivos WAV para mejor compatibilidad. Para MP3/M4A necesitas FFmpeg instalado.")
+            st.info("💡 **Recomendación**: Usa archivos WAV para mejor compatibilidad. Para MP3/M4A necesitas FFmpeg instalado.")
             
             uploaded_audio = st.file_uploader(
                 "Selecciona un archivo de audio",
@@ -523,34 +448,34 @@ def mostrar_controles_input():
         
         if uploaded_audio is not None:
             st.audio(uploaded_audio, format=uploaded_audio.type)
-            st.success(f"Archivo cargado: {uploaded_audio.name}")
+            st.success(f"✅ Archivo cargado: {uploaded_audio.name}")
             
-            if st.button("Procesar Audio", type="primary", key="procesar_audio"):
+            if st.button("🎯 Procesar Audio", type="primary", key="procesar_audio"):
                 if st.session_state.speech_to_text is None:
-                    st.error("Sistema de transcripción no disponible")
+                    st.error("❌ Sistema de transcripción no disponible")
                 else:
-                    with st.spinner("Transcribiendo audio..."):
+                    with st.spinner("🔄 Transcribiendo audio..."):
                         # Transcribir audio real
                         texto_transcrito = st.session_state.speech_to_text.transcribe_audio_file(uploaded_audio)
                         
                         if texto_transcrito and not texto_transcrito.startswith("Error") and not texto_transcrito.startswith("No se pudo"):
                             # Mostrar transcripción
-                            st.success(f"Transcripción: {texto_transcrito}")
+                            st.success(f"📝 Transcripción: {texto_transcrito}")
                             
                             # Procesar mensaje
                             procesar_mensaje(texto_transcrito, "audio")
-                            st.success("Audio transcrito y procesado")
+                            st.success("✅ Audio transcrito y procesado")
                             time.sleep(0.5)
                             st.rerun()
                         else:
-                            st.error(f"{texto_transcrito}")
+                            st.error(f"❌ {texto_transcrito}")
         
         with audio_tab2:
             st.markdown("### Grabación desde micrófono")
             
             # Verificar si hay micrófono disponible
             if st.session_state.speech_to_text and st.session_state.speech_to_text.is_microphone_available():
-                st.success("Micrófono detectado")
+                st.success("🎤 Micrófono detectado")
                 
                 # Configuración de grabación
                 col1, col2 = st.columns(2)
@@ -559,27 +484,27 @@ def mostrar_controles_input():
                 with col2:
                     st.write("")  # Espaciado
                 
-                if st.button("Empezar Grabación", type="primary", key="record_audio"):
+                if st.button("🎤 Empezar Grabación", type="primary", key="record_audio"):
                     if st.session_state.speech_to_text is None:
-                        st.error("Sistema de transcripción no disponible")
+                        st.error("❌ Sistema de transcripción no disponible")
                     else:
                         # Grabar y transcribir desde micrófono
                         texto_transcrito = st.session_state.speech_to_text.transcribe_microphone(timeout)
                         
                         if texto_transcrito and not texto_transcrito.startswith("Error") and not texto_transcrito.startswith("No se pudo") and not texto_transcrito.startswith("Tiempo"):
                             # Mostrar transcripción
-                            st.success(f"Transcripción: {texto_transcrito}")
+                            st.success(f"📝 Transcripción: {texto_transcrito}")
                             
                             # Procesar mensaje
                             procesar_mensaje(texto_transcrito, "audio_live")
-                            st.success("Audio grabado, transcrito y procesado")
+                            st.success("✅ Audio grabado, transcrito y procesado")
                             time.sleep(0.5)
                             st.rerun()
                         else:
-                            st.warning(f"{texto_transcrito}")
+                            st.warning(f"⚠️ {texto_transcrito}")
             else:
-                st.warning("No se detectó micrófono o el sistema de audio no está disponible")
-                st.info("Asegúrate de que tu micrófono esté conectado y funcionando")
+                st.warning("⚠️ No se detectó micrófono o el sistema de audio no está disponible")
+                st.info("💡 Asegúrate de que tu micrófono esté conectado y funcionando")
 
 def mostrar_panel_analisis_lead():
     """Mostrar panel detallado de análisis de lead"""
@@ -591,11 +516,11 @@ def mostrar_panel_analisis_lead():
         return
     
     # Panel expandible con análisis detallado
-    with st.expander("Análisis Detallado del Lead", expanded=False):
+    with st.expander("📊 Análisis Detallado del Lead", expanded=False):
         col1, col2 = st.columns([1, 1])
         
         with col1:
-            st.markdown("### Evaluación de Calidad")
+            st.markdown("### 🎯 Evaluación de Calidad")
             score = analisis.get('score', 0)
             quality = analisis.get('quality_grade', '')
             
@@ -607,7 +532,7 @@ def mostrar_panel_analisis_lead():
             # Fortalezas del lead
             strengths = analisis.get('strengths', [])
             if strengths:
-                st.markdown("### Fortalezas")
+                st.markdown("### ✅ Fortalezas")
                 for strength in strengths:
                     st.write(f"• {strength}")
         
@@ -615,21 +540,21 @@ def mostrar_panel_analisis_lead():
             # Preocupaciones
             concerns = analisis.get('concerns', [])
             if concerns:
-                st.markdown("### Preocupaciones")
+                st.markdown("### ⚠️ Preocupaciones")
                 for concern in concerns:
                     st.write(f"• {concern}")
             
             # Información faltante
             missing = analisis.get('missing_info', [])
             if missing:
-                st.markdown("### Información Pendiente")
+                st.markdown("### ❓ Información Pendiente")
                 for item in missing:
                     st.write(f"• {item}")
         
         # Próximos pasos recomendados
         next_steps = analisis.get('next_steps', [])
         if next_steps:
-            st.markdown("### Plan de Acción Recomendado")
+            st.markdown("### 📋 Plan de Acción Recomendado")
             for i, step in enumerate(next_steps, 1):
                 st.write(f"{i}. {step}")
 
@@ -648,7 +573,7 @@ def main():
     
     # Título principal con estilo
     st.markdown("""
-    #AI Agent de Voz para Lead Generation
+    # 🎤 AI Agent de Voz para Lead Generation
     ### *Convierte conversaciones en oportunidades de negocio*
     """)
     st.markdown("---")
@@ -657,7 +582,7 @@ def main():
     config_ok = mostrar_sidebar()
     
     if not config_ok:
-        st.error("La aplicación no puede funcionar sin una configuración válida. Revisa las variables de entorno en el archivo .env")
+        st.error("⚠️ La aplicación no puede funcionar sin una configuración válida. Revisa las variables de entorno en el archivo .env")
         st.stop()
     
     # Panel de análisis de lead (si hay información)
@@ -676,7 +601,7 @@ def main():
     st.markdown("---")
     st.markdown("""
     <div style='text-align: center; color: #666;'>
-        <p><strong>Copyright: Santiago Gamborino Morales</strong></p>
+        <p><strong>🚀 AI Agent v1.0</strong></p>
         <p>Powered by Streamlit • Google Gemini • Supabase</p>
         <p><em>Estado actual: MVP - Interfaz básica funcionando</em></p>
     </div>

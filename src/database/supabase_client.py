@@ -1,15 +1,17 @@
 """
-Cliente de Supabase con CRUD para la base de datos
+Cliente de Supabase para el Agente de IA
+Maneja la conexión y operaciones CRUD con la base de datos
 """
 
 from supabase import create_client, Client
 from typing import Dict, List, Optional, Any
 import json
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from src.utils.config import Config
 
 class SupabaseClient:
+    """Cliente para interactuar con Supabase"""
     
     def __init__(self):
         """Inicializar cliente de Supabase"""
@@ -21,21 +23,21 @@ class SupabaseClient:
                 raise ValueError("Faltan credenciales de Supabase en la configuración")
             
             self.supabase: Client = create_client(self.url, self.key)
-            print("Cliente Supabase inicializado correctamente")
+            print("✅ Cliente Supabase inicializado correctamente")
             
         except Exception as e:
-            print(f"Error inicializando Supabase: {e}")
+            print(f"❌ Error inicializando Supabase: {e}")
             raise e
     
     def test_connection(self) -> bool:
         """Probar conexión a Supabase"""
         try:
             # Intentar hacer una consulta simple
-            #result = self.supabase.table('leads').select("id").limit(1).execute()
-            print("Conexión a Supabase exitosa")
+            result = self.supabase.table('leads').select("id").limit(1).execute()
+            print("✅ Conexión a Supabase exitosa")
             return True
         except Exception as e:
-            print(f"Error de conexión a Supabase: {e}")
+            print(f"❌ Error de conexión a Supabase: {e}")
             return False
     
     # ==========================================
@@ -43,48 +45,73 @@ class SupabaseClient:
     # ==========================================
     
     def create_lead(self, lead_data: Dict[str, Any]) -> Optional[str]:
-
+        """
+        Crear un nuevo lead en la base de datos
+        
+        Args:
+            lead_data: Información del lead extraída por el sistema
+            
+        Returns:
+            ID del lead creado o None si hay error
+        """
         try:
             # Preparar datos para inserción
             lead_record = self._prepare_lead_data(lead_data)
             
             # Insertar en la base de datos
-            result = self.supabase.table('leads').insert(lead_record).execute() # type: ignore
+            result = self.supabase.table('leads').insert(lead_record).execute()
             
             if result.data and len(result.data) > 0:
                 lead_id = result.data[0]['id']
-                print(f"Lead creado con ID: {lead_id}")
+                print(f"✅ Lead creado con ID: {lead_id}")
                 return lead_id
             else:
-                print("No se pudo crear el lead")
+                print("❌ No se pudo crear el lead")
                 return None
                 
         except Exception as e:
-            print(f"Error creando lead: {e}")
+            print(f"❌ Error creando lead: {e}")
             return None
     
     def update_lead(self, lead_id: str, lead_data: Dict[str, Any]) -> bool:
-
+        """
+        Actualizar información de un lead existente
+        
+        Args:
+            lead_id: ID del lead a actualizar
+            lead_data: Nueva información del lead
+            
+        Returns:
+            True si se actualizó correctamente
+        """
         try:
             # Preparar datos de actualización
             update_data = self._prepare_lead_data(lead_data, update=True)
             
             # Actualizar en la base de datos
-            result = self.supabase.table('leads').update(update_data).eq('id', lead_id).execute() # type: ignore
+            result = self.supabase.table('leads').update(update_data).eq('id', lead_id).execute()
             
             if result.data and len(result.data) > 0:
-                print(f"Lead {lead_id} actualizado correctamente")
+                print(f"✅ Lead {lead_id} actualizado correctamente")
                 return True
             else:
-                print(f"No se pudo actualizar el lead {lead_id}")
+                print(f"❌ No se pudo actualizar el lead {lead_id}")
                 return False
                 
         except Exception as e:
-            print(f"Error actualizando lead: {e}")
+            print(f"❌ Error actualizando lead: {e}")
             return False
     
     def get_lead(self, lead_id: str) -> Optional[Dict[str, Any]]:
-
+        """
+        Obtener información de un lead por ID
+        
+        Args:
+            lead_id: ID del lead
+            
+        Returns:
+            Información del lead o None si no existe
+        """
         try:
             result = self.supabase.table('leads').select("*").eq('id', lead_id).execute()
             
@@ -94,11 +121,20 @@ class SupabaseClient:
                 return None
                 
         except Exception as e:
-            print(f"Error obteniendo lead: {e}")
+            print(f"❌ Error obteniendo lead: {e}")
             return None
     
-    def search_leads(self, filters: Dict[str, Any] = None, limit: int = 50) -> List[Dict[str, Any]]: # type: ignore
-
+    def search_leads(self, filters: Dict[str, Any] = None, limit: int = 50) -> List[Dict[str, Any]]:
+        """
+        Buscar leads con filtros opcionales
+        
+        Args:
+            filters: Filtros de búsqueda
+            limit: Límite de resultados
+            
+        Returns:
+            Lista de leads encontrados
+        """
         try:
             query = self.supabase.table('leads').select("*")
             
@@ -112,7 +148,7 @@ class SupabaseClient:
             return result.data or []
             
         except Exception as e:
-            print(f"Error buscando leads: {e}")
+            print(f"❌ Error buscando leads: {e}")
             return []
     
     # ==========================================
@@ -120,28 +156,45 @@ class SupabaseClient:
     # ==========================================
     
     def save_conversation(self, session_id: str, context_data: Dict[str, Any]) -> Optional[str]:
-
+        """
+        Guardar una conversación completa
+        
+        Args:
+            session_id: ID de la sesión de conversación
+            context_data: Datos del contexto de conversación
+            
+        Returns:
+            ID de la conversación guardada o None si hay error
+        """
         try:
             # Preparar datos de conversación
             conversation_record = self._prepare_conversation_data(session_id, context_data)
             
             # Insertar en la base de datos
-            result = self.supabase.table('conversations').insert(conversation_record).execute() # type: ignore
+            result = self.supabase.table('conversations').insert(conversation_record).execute()
             
             if result.data and len(result.data) > 0:
                 conversation_id = result.data[0]['id']
-                print(f"Conversación guardada con ID: {conversation_id}")
+                print(f"✅ Conversación guardada con ID: {conversation_id}")
                 return conversation_id
             else:
-                print("No se pudo guardar la conversación")
+                print("❌ No se pudo guardar la conversación")
                 return None
                 
         except Exception as e:
-            print(f"Error guardando conversación: {e}")
+            print(f"❌ Error guardando conversación: {e}")
             return None
     
     def get_conversation(self, session_id: str) -> Optional[Dict[str, Any]]:
-
+        """
+        Obtener una conversación por session_id
+        
+        Args:
+            session_id: ID de la sesión
+            
+        Returns:
+            Datos de la conversación o None si no existe
+        """
         try:
             result = self.supabase.table('conversations').select("*").eq('session_id', session_id).execute()
             
@@ -151,17 +204,25 @@ class SupabaseClient:
                 return None
                 
         except Exception as e:
-            print(f"Error obteniendo conversación: {e}")
+            print(f"❌ Error obteniendo conversación: {e}")
             return None
     
     def get_lead_conversations(self, lead_id: str) -> List[Dict[str, Any]]:
-
+        """
+        Obtener todas las conversaciones de un lead
+        
+        Args:
+            lead_id: ID del lead
+            
+        Returns:
+            Lista de conversaciones del lead
+        """
         try:
             result = self.supabase.table('conversations').select("*").eq('lead_id', lead_id).execute()
             return result.data or []
             
         except Exception as e:
-            print(f"Error obteniendo conversaciones del lead: {e}")
+            print(f"❌ Error obteniendo conversaciones del lead: {e}")
             return []
     
     # ==========================================
@@ -169,13 +230,22 @@ class SupabaseClient:
     # ==========================================
     
     def save_interaction_metrics(self, session_id: str, metrics: Dict[str, Any]) -> bool:
-
+        """
+        Guardar métricas de una interacción
+        
+        Args:
+            session_id: ID de la sesión
+            metrics: Métricas de la interacción
+            
+        Returns:
+            True si se guardó correctamente
+        """
         try:
             metric_record = {
                 'session_id': session_id,
-                'timestamp': datetime.now(timezone.utc).isoformat(),
+                'timestamp': datetime.utcnow().isoformat(),
                 'metrics_data': json.dumps(metrics),
-                'created_at': datetime.now(timezone.utc).isoformat()
+                'created_at': datetime.utcnow().isoformat()
             }
             
             result = self.supabase.table('interaction_metrics').insert(metric_record).execute()
@@ -183,11 +253,19 @@ class SupabaseClient:
             return result.data and len(result.data) > 0
             
         except Exception as e:
-            print(f"Error guardando métricas: {e}")
+            print(f"❌ Error guardando métricas: {e}")
             return False
     
     def get_analytics_dashboard_data(self, days: int = 30) -> Dict[str, Any]:
-
+        """
+        Obtener datos para dashboard de analytics
+        
+        Args:
+            days: Número de días hacia atrás para analizar
+            
+        Returns:
+            Datos agregados para dashboard
+        """
         try:
             # Fecha límite
             date_limit = (datetime.utcnow() - timedelta(days=days)).isoformat()
@@ -212,7 +290,7 @@ class SupabaseClient:
             return dashboard_data
             
         except Exception as e:
-            print(f"Error obteniendo datos de analytics: {e}")
+            print(f"❌ Error obteniendo datos de analytics: {e}")
             return {}
     
     # ==========================================
@@ -264,9 +342,9 @@ class SupabaseClient:
         
         # Agregar timestamps
         if not update:
-            record['created_at'] = datetime.now(timezone.utc).isoformat()
+            record['created_at'] = datetime.utcnow().isoformat()
         
-        record['updated_at'] = datetime.now(timezone.utc).isoformat()
+        record['updated_at'] = datetime.utcnow().isoformat()
         
         # Limpiar valores None
         return {k: v for k, v in record.items() if v is not None}
@@ -349,7 +427,7 @@ class SupabaseClient:
         Crear tablas si no existen (solo para desarrollo/testing)
         En producción, las tablas deben crearse via Supabase Dashboard
         """
-        print("Para crear las tablas, usa el SQL Schema proporcionado en Supabase Dashboard")
+        print("ℹ️  Para crear las tablas, usa el SQL Schema proporcionado en Supabase Dashboard")
         return True
     
     def get_database_stats(self) -> Dict[str, Any]:
@@ -372,5 +450,5 @@ class SupabaseClient:
             return stats
             
         except Exception as e:
-            print(f"Error obteniendo estadísticas: {e}")
+            print(f"❌ Error obteniendo estadísticas: {e}")
             return {}

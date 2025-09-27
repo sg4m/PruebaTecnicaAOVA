@@ -24,10 +24,10 @@ class GeminiClient:
         for model_name in available_models:
             try:
                 self.model = genai.GenerativeModel(model_name)
-                print(f"Modelo inicializado correctamente: {model_name}")
+                print(f"✅ Modelo inicializado correctamente: {model_name}")
                 break
             except Exception as e:
-                print(f"Error con modelo {model_name}: {e}")
+                print(f"❌ Error con modelo {model_name}: {e}")
                 continue
         
         if self.model is None:
@@ -43,7 +43,14 @@ class GeminiClient:
     def generate_response(self, user_message: str, context: List[Dict] = None, context_manager = None) -> str:
         """
         Generar respuesta usando Gemini con contexto inteligente
-
+        
+        Args:
+            user_message: Mensaje del usuario
+            context: Historial de conversación para contexto (fallback)
+            context_manager: Gestor de contexto inteligente
+            
+        Returns:
+            Respuesta generada por Gemini
         """
         try:
             # Construir prompt con contexto inteligente
@@ -67,7 +74,12 @@ class GeminiClient:
     def extract_lead_info(self, conversation_history: List[Dict]) -> Dict:
         """
         Extraer información del lead de la conversación con análisis avanzado
-
+        
+        Args:
+            conversation_history: Historial completo de la conversación
+            
+        Returns:
+            Diccionario con información extraída y puntuación de lead
         """
         try:
             # Construir texto de conversación
@@ -119,35 +131,27 @@ class GeminiClient:
             response = self.model.generate_content(
                 extraction_prompt,
                 generation_config={
-                    'max_output_tokens': 2048,
-                    'temperature': 0.1,
-                },
-                safety_settings={
-                    'HARASSMENT': 'BLOCK_NONE',
-                    'HATE_SPEECH': 'BLOCK_NONE',
-                    'SEXUALLY_EXPLICIT': 'BLOCK_NONE',
-                    'DANGEROUS_CONTENT': 'BLOCK_NONE'
+                    'max_output_tokens': 2048,  # Aumentar tokens para respuestas más largas
+                    'temperature': 0.1,  # Baja temperatura para más consistencia
                 }
             )
-            
-            # Verificar si la respuesta es válida
-            if not response.candidates or not response.candidates[0].content.parts:
-                print(f"Respuesta bloqueada por safety filter. Finish reason: {response.candidates[0].finish_reason if response.candidates else 'desconocido'}")
-                return self._get_empty_lead_structure()
             
             # Limpiar y parsear respuesta JSON
             return self._parse_json_response(response.text)
                 
         except Exception as e:
             print(f"Error extracting lead info: {e}")
-            if "finish_reason" in str(e):
-                print("La conversación fue bloqueada por filtros de seguridad de Gemini")
             return self._get_empty_lead_structure()
 
     def analyze_lead_quality(self, lead_info: Dict) -> Dict:
         """
         Analizar la calidad del lead y generar recomendaciones
-
+        
+        Args:
+            lead_info: Información extraída del lead
+            
+        Returns:
+            Análisis de calidad y próximos pasos recomendados
         """
         try:
             # Obtener puntuación existente (nueva estructura compacta)
@@ -158,7 +162,7 @@ class GeminiClient:
             
             # Análisis basado en puntuación
             if score >= 80:
-                quality = "A - Prospecto"
+                quality = "A - Lead Caliente"
                 priority = "ALTA"
                 next_steps = [
                     "Programar demo/reunión inmediata",
@@ -166,7 +170,7 @@ class GeminiClient:
                     "Asignar account manager dedicado"
                 ]
             elif score >= 60:
-                quality = "B - Lead medio"
+                quality = "B - Lead Tibio"
                 priority = "MEDIA"
                 next_steps = [
                     "Obtener información de contacto faltante",
@@ -175,14 +179,14 @@ class GeminiClient:
                 ]
             elif score >= 40:
                 priority = "BAJA"
-                quality = "C - Lead bajo"
+                quality = "C - Lead Frío"
                 next_steps = [
                     "Nurturing con contenido de valor",
                     "Identificar pain points específicos",
                     "Generar más confianza y rapport"
                 ]
             else:
-                quality = "D - Lead sin calificacion"
+                quality = "D - No Calificado"
                 priority = "MUY BAJA"
                 next_steps = [
                     "Calificar mejor el presupuesto",
@@ -229,15 +233,15 @@ class GeminiClient:
             
         except json.JSONDecodeError as e:
             print(f"Error parsing JSON: {e}")
-            print("Intentando recuperación automática del JSON...")
+            print("🔧 Intentando recuperación automática del JSON...")
             
             # Estrategia de recuperación: intentar extraer información parcial
             recovered_info = self._recover_partial_json(response_text)
             if recovered_info:
-                print("Información parcial recuperada exitosamente")
+                print("✅ Información parcial recuperada exitosamente")
                 return recovered_info
             
-            print(f"No se pudo recuperar información de: {response_text[:200]}...")
+            print(f"❌ No se pudo recuperar información de: {response_text[:200]}...")
             return self._get_empty_lead_structure()
     
     def _recover_partial_json(self, text: str) -> Dict:
@@ -402,47 +406,30 @@ class GeminiClient:
         """Construir prompt con contexto inteligente y personalidad del agente"""
         
         system_prompt = """
-        Eres un agente de ventas experto de AOVA, la plataforma líder de inteligencia artificial hecha específicamente para México. 
-        Tu misión es ayudar a empresas mexicanas a transformar su operación con IA.
+        Eres AOVA, un agente de ventas experto especializado en lead generation y consultoría tecnológica. Tu objetivo es:
         
-        SOBRE AOVA:
-        - Somos especialistas en IA para el mercado mexicano
-        - Nuestras soluciones ahorran hasta 40 horas por semana a cada equipo
-        - El 89% de nuestros clientes reporta reducción en tiempos de respuesta
-        - Las empresas recuperan su inversión en menos de 3 meses
-        - Reducimos costos operativos hasta 30% en atención al cliente
-        
-        NUESTROS PRODUCTOS PRINCIPALES:
-        • AOVA Pulse: Vendedor virtual con avatar realista que atiende clientes 24/7, integra con CRM/ERP/WhatsApp
-        • AOVA Spark: Evalúa pitches de negocio con IA, perfecto para concursos y aceleradoras
-        • AOVA Line: Agente que contesta, guía y transfiere llamadas como humano, ideal para call centers
-        • AOVA Lab: Soluciones 100% personalizadas (predicción, clasificación, automatización)
-        
-        TU OBJETIVO COMO AGENTE:
-        1. Ser amigable, profesional y enfocado en resultados reales
-        2. Hacer preguntas estratégicas para entender sus retos operativos
-        3. Identificar oportunidades de automatización y ahorro de tiempo/costos
-        4. Recopilar información: nombre, empresa, industria, retos específicos, tamaño de equipo
-        5. Demostrar valor tangible con datos y casos de éxito
-        6. Guiar hacia una demostración personalizada gratuita
+        1. Ser amigable, profesional y persuasivo
+        2. Hacer preguntas estratégicas para calificar al prospecto
+        3. Recopilar información clave: nombre, empresa, necesidades, presupuesto, contacto
+        4. Ofrecer valor y generar interés en los servicios
+        5. Guiar la conversación hacia una reunión o demostración
         
         REGLAS IMPORTANTES:
-        - Preséntate como consultor de AOVA especializado en transformación con IA
-        - Haz UNA pregunta específica a la vez
-        - Enfócate en problemas reales: atención al cliente lenta, procesos manuales, costos altos
-        - Menciona beneficios cuantificables (40 horas ahorradas, ROI en 3 meses, etc.)
-        - Adapta la solución según su industria y tamaño
-        - Siempre ofrece demo personalizada y gratuita
-        - Usa lenguaje mexicano natural y directo
+        - Preséntate como AOVA, consultor de crecimiento estratégico
+        - Haz UNA pregunta a la vez para no abrumar
+        - Personaliza tus respuestas según la información ya obtenida
+        - Siempre busca entender las necesidades específicas
+        - Sugiere soluciones relevantes
+        - Mantén un tono conversacional y natural
+        - Usa el contexto previo para crear continuidad
         
-        CASOS DE USO POR INDUSTRIA:
-        - Call Centers: AOVA Line para automatizar llamadas
-        - E-commerce: AOVA Pulse para atención 24/7
-        - Educación/Aceleradoras: AOVA Spark para evaluación automática
-        - Cualquier empresa: AOVA Lab para automatización específica
+        Si el usuario pregunta sobre servicios, menciona que ofrecemos:
+        - Marketing digital y estrategias de crecimiento
+        - Automatización de procesos de ventas
+        - Consultoría en transformación digital
+        - Desarrollo de software personalizado
         
-        NUNCA uses placeholders genéricos. Siempre habla de AOVA específicamente.
-        NUNCA uses [TU NOMBRE] como respuesta, responde con "Consultor de AOVA".
+        NUNCA uses frases como "[Tu Nombre]" o placeholders similares.
         """
         
         # Contexto inteligente del Context Manager

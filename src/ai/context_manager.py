@@ -1,6 +1,6 @@
 """
-Sistema de contexto para la IA
-Controla memoria de conversación, seguimiento de temas y personalización
+Sistema de Gestión de Contexto para el Agente de IA
+Maneja la memoria de conversación, seguimiento de temas y personalización
 Incluye persistencia en base de datos con Supabase
 """
 
@@ -147,9 +147,9 @@ class ContextManager:
         self.current_context.total_interactions += 1
         
         # Nota: Los mensajes se guardarán cuando se guarde la conversación completa
-        # NO se guardan mensajes individuales
+        # No guardamos mensajes individuales para evitar problemas de concurrencia
         
-        # Mantener solo los últimos mensajes para el contexto
+        # Mantener solo los últimos N mensajes para el contexto
         if len(self.current_context.messages) > self.max_context_messages * 2:
             # Conservar los primeros mensajes (introducción) y los más recientes
             introduction_messages = self.current_context.messages[:3]
@@ -189,7 +189,7 @@ class ContextManager:
             
             if existing_conversation:
                 # La conversación ya existe, no necesitamos crear una nueva
-                print(f"Conversación ya existe en BD: {existing_conversation['id']}")
+                print(f"ℹ️ Conversación ya existe en BD: {existing_conversation['id']}")
                 return existing_conversation['id']
             else:
                 # Crear nueva conversación
@@ -197,11 +197,11 @@ class ContextManager:
                     self.current_context.session_id,
                     self.current_context.to_dict()
                 )
-                print(f"Conversación guardada en BD: {conversation_id}")
+                print(f"✅ Conversación guardada en BD: {conversation_id}")
                 return conversation_id
                 
         except Exception as e:
-            print(f"Error guardando conversación: {e}")
+            print(f"❌ Error guardando conversación: {e}")
             return None
     
     def load_conversation_from_db(self, session_id: str) -> bool:
@@ -258,11 +258,11 @@ class ContextManager:
                 total_interactions=context_data.get('total_interactions', 0)
             )
             
-            print(f"Conversación cargada desde BD: {session_id}")
+            print(f"✅ Conversación cargada desde BD: {session_id}")
             return True
             
         except Exception as e:
-            print(f"Error cargando conversación: {e}")
+            print(f"❌ Error cargando conversación: {e}")
             return False
     
     def get_conversation_context_for_ai(self) -> Dict[str, Any]:
@@ -453,7 +453,7 @@ class ContextManager:
             # self.db_client.supabase.table('messages').insert(message_data).execute()
             
         except Exception as e:
-            print(f"Error guardando mensaje en BD: {e}")
+            print(f"❌ Error guardando mensaje en BD: {e}")
     
     def _save_or_update_lead_in_db(self, lead_info: Dict[str, Any]) -> None:
         """Guardar o actualizar lead en la base de datos"""
@@ -475,10 +475,10 @@ class ContextManager:
                 # Si se creó exitosamente, actualizar el lead_id en el contexto
                 if new_lead_id:
                     self.current_context.lead_id = new_lead_id
-                    print(f"Lead creado en BD con ID: {new_lead_id}")
+                    print(f"✅ Lead creado en BD con ID: {new_lead_id}")
                 
         except Exception as e:
-            print(f"Error guardando lead en BD: {e}")
+            print(f"❌ Error guardando lead en BD: {e}")
     
     def _deep_update(self, base_dict: Dict[str, Any], update_dict: Dict[str, Any]) -> None:
         """Actualización profunda de diccionarios anidados"""

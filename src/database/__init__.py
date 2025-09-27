@@ -1,4 +1,7 @@
-#Archivo de persistencia de los datos en Supabase
+"""
+Módulo de Base de Datos
+Maneja la persistencia de datos usando Supabase
+"""
 
 from .supabase_client import SupabaseClient
 

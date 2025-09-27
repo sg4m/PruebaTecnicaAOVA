@@ -17,7 +17,10 @@ class Config:
     # Configuraciones de audio
     AUDIO_SAMPLE_RATE = 16000
     AUDIO_CHUNK_DURATION = 5  # segundos
-        
+    
+    # Configuraciones de Whisper
+    WHISPER_MODEL = "base"  # Cambiamos de "turbo" a "base" para mejor compatibilidad
+    
     # Configuraciones de Gemini
     GEMINI_MODEL = "gemini-1.5-flash"  # Modelo actualizado
     MAX_TOKENS = 1000
@@ -25,7 +28,7 @@ class Config:
     
     @classmethod
     def validate_config(cls):
-        #Valila que la configuracion sea correcta y no falte nada
+        """Validar que todas las configuraciones necesarias estén presentes"""
         required_vars = [
             'GOOGLE_API_KEY',
             'SUPABASE_URL', 
