@@ -24,10 +24,10 @@ class GeminiClient:
         for model_name in available_models:
             try:
                 self.model = genai.GenerativeModel(model_name)
-                print(f"✅ Modelo inicializado correctamente: {model_name}")
+                print(f"Modelo inicializado correctamente: {model_name}")
                 break
             except Exception as e:
-                print(f"❌ Error con modelo {model_name}: {e}")
+                print(f"Error con modelo {model_name}: {e}")
                 continue
         
         if self.model is None:
@@ -43,14 +43,7 @@ class GeminiClient:
     def generate_response(self, user_message: str, context: List[Dict] = None, context_manager = None) -> str:
         """
         Generar respuesta usando Gemini con contexto inteligente
-        
-        Args:
-            user_message: Mensaje del usuario
-            context: Historial de conversación para contexto (fallback)
-            context_manager: Gestor de contexto inteligente
-            
-        Returns:
-            Respuesta generada por Gemini
+
         """
         try:
             # Construir prompt con contexto inteligente
@@ -75,7 +68,7 @@ class GeminiClient:
         """Construir prompt con contexto inteligente y personalidad del agente"""
         
         system_prompt = """
-        Eres un agente de atención al cliente inteligente y amigable. Tu objetivo es:
+        Eres el agente de atención al cliente inteligente y amigable de la empresa AOVA. Tu objetivo es:
         
         1. Ser amigable, profesional y servicial
         2. Responder preguntas de manera clara y útil

@@ -19,12 +19,7 @@ class SpeechToText:
     def transcribe_audio_file(self, audio_file) -> Optional[str]:
         """
         Transcribir archivo de audio a texto
-        
-        Args:
-            audio_file: Archivo de audio de Streamlit
-            
-        Returns:
-            Texto transcrito o None si hay error
+
         """
         temp_file_path = None
         wav_file_path = None
@@ -102,16 +97,11 @@ class SpeechToText:
     def transcribe_microphone(self, timeout: int = 5) -> Optional[str]:
         """
         Transcribir desde micrófono en tiempo real
-        
-        Args:
-            timeout: Tiempo límite en segundos
-            
-        Returns:
-            Texto transcrito o None si hay error
+
         """
         try:
             with sr.Microphone() as source:
-                st.info("🎤 Escuchando... Habla ahora")
+                st.info("Escuchando... Habla ahora")
                 
                 # Ajustar al ruido ambiente
                 self.recognizer.adjust_for_ambient_noise(source, duration=0.5)
@@ -119,7 +109,7 @@ class SpeechToText:
                 # Escuchar audio
                 audio_data = self.recognizer.listen(source, timeout=timeout)
                 
-                st.info("🔄 Procesando audio...")
+                st.info("Procesando audio...")
                 
                 # Transcribir
                 text = self.recognizer.recognize_google(
@@ -144,9 +134,7 @@ class SpeechToText:
     def is_microphone_available(self) -> bool:
         """
         Verificar si hay micrófono disponible
-        
-        Returns:
-            True si hay micrófono disponible
+
         """
         try:
             # Listar micrófonos disponibles
@@ -167,8 +155,6 @@ class SpeechToText:
         """
         Obtener lista de micrófonos disponibles
         
-        Returns:
-            Lista de nombres de micrófonos
         """
         try:
             return sr.Microphone.list_microphone_names()

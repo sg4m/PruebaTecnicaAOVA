@@ -14,9 +14,9 @@ class TextToSpeech:
         try:
             self.engine = pyttsx3.init()
             self.configure_voice()
-            print("✅ pyttsx3 TTS inicializado correctamente")
+            print("pyttsx3 TTS inicializado correctamente")
         except Exception as e:
-            print(f"❌ Error inicializando TTS: {e}")
+            print(f"Error inicializando TTS: {e}")
             self.engine = None
     
     def configure_voice(self):
@@ -59,11 +59,6 @@ class TextToSpeech:
         """
         Reproducir texto como voz usando pyttsx3
         
-        Args:
-            text: Texto a convertir en voz
-            
-        Returns:
-            True si se reprodujo correctamente
         """
         if self.engine is None:
             return False
@@ -97,11 +92,6 @@ class TextToSpeech:
         """
         Convertir texto a archivo de audio usando pyttsx3
         
-        Args:
-            text: Texto a convertir
-            
-        Returns:
-            Ruta del archivo de audio temporal o None si hay error
         """
         if self.engine is None:
             return None
@@ -125,8 +115,6 @@ class TextToSpeech:
         """
         Obtener lista de voces disponibles
         
-        Returns:
-            Lista de nombres de voces
         """
         if self.engine is None:
             return []
@@ -140,9 +128,7 @@ class TextToSpeech:
     def get_tts_status(self) -> dict:
         """
         Obtener estado del sistema TTS simplificado
-        
-        Returns:
-            Diccionario con información del estado
+
         """
         status = {
             "pyttsx3": self.engine is not None,
@@ -150,17 +136,15 @@ class TextToSpeech:
         }
         
         if self.engine:
-            status["message"] = "✅ TTS básico funcionando correctamente"
+            status["message"] = "TTS básico funcionando correctamente"
         else:
-            status["message"] = "❌ TTS no disponible"
+            status["message"] = "TTS no disponible"
         
         return status
     
     def is_available(self) -> bool:
         """
         Verificar si TTS está disponible
-        
-        Returns:
-            True si TTS funciona
+
         """
         return self.engine is not None
