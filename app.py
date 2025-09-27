@@ -19,8 +19,7 @@ def inicializar_sesion():
     if 'conversation_history' not in st.session_state:
         st.session_state.conversation_history = []
     
-    if 'lead_info' not in st.session_state:
-        st.session_state.lead_info = {}
+    # Lead info functionality removed for simplification
     
     # Inicializar cliente de Gemini
     if 'gemini_client' not in st.session_state:
@@ -136,69 +135,7 @@ def mostrar_sidebar():
             if not st.session_state.text_to_speech:
                 st.caption("❌ Error en Text-to-Speech")
         
-        # Información del lead actual - Vista mejorada
-        st.markdown("### 👤 Información del Lead")
-        if st.session_state.lead_info:
-            # Mostrar análisis de calidad si existe
-            analisis = st.session_state.lead_info.get('analisis', {})
-            if analisis:
-                quality = analisis.get('quality_grade', '')
-                score = analisis.get('score', 0)
-                priority = analisis.get('priority', '')
-                
-                # Mostrar puntuación con color según calidad
-                if score >= 80:
-                    st.success(f"🔥 {quality} ({score}/100)")
-                elif score >= 60:
-                    st.warning(f"🔶 {quality} ({score}/100)")
-                elif score >= 40:
-                    st.info(f"❄️ {quality} ({score}/100)")
-                else:
-                    st.error(f"❌ {quality} ({score}/100)")
-            
-            # Información personal
-            personal = st.session_state.lead_info.get('informacion_personal', {})
-            if personal:
-                st.markdown("**Información Personal:**")
-                for key, value in personal.items():
-                    if value:
-                        st.text(f"• {key.replace('_', ' ').title()}: {value}")
-            
-            # Información de contacto
-            contacto = st.session_state.lead_info.get('contacto', {})
-            if contacto:
-                st.markdown("**Contacto:**")
-                for key, value in contacto.items():
-                    if value:
-                        st.text(f"• {key.replace('_', ' ').title()}: {value}")
-            
-            # Necesidades
-            necesidades = st.session_state.lead_info.get('necesidades', {})
-            if necesidades and necesidades.get('descripcion'):
-                st.markdown("**Necesidades:**")
-                st.text_area("", necesidades['descripcion'], height=60, disabled=True)
-            
-            # Información comercial
-            comercial = st.session_state.lead_info.get('comercial', {})
-            if comercial:
-                st.markdown("**Información Comercial:**")
-                for key, value in comercial.items():
-                    if value and key != 'decision_maker':
-                        st.text(f"• {key.replace('_', ' ').title()}: {value}")
-                        
-            # Próximos pasos recomendados
-            if analisis and analisis.get('next_steps'):
-                with st.expander("📋 Próximos Pasos Recomendados"):
-                    for i, step in enumerate(analisis['next_steps'], 1):
-                        st.write(f"{i}. {step}")
-                        
-            # Información faltante
-            if analisis and analisis.get('missing_info'):
-                with st.expander("❓ Información Faltante"):
-                    for info in analisis['missing_info']:
-                        st.write(f"• {info}")
-        else:
-            st.info("No hay información de lead capturada")
+        # Lead information section removed for simplification
         
         # Estado del Context Manager  
         st.markdown("### 🧠 Contexto Inteligente")
@@ -228,17 +165,11 @@ def mostrar_sidebar():
             tts_status = st.session_state.text_to_speech.get_tts_status()
             st.info(tts_status["message"])
             
-            if tts_status["google_cloud"] == "no_configurado":
-                with st.expander("💡 Mejorar calidad de voz"):
-                    st.markdown("""
-                    **Para obtener voz más natural:**
-                    1. 📖 Lee las instrucciones en `CONFIGURAR_TTS.md`
-                    2. 🔑 Configura credenciales de Google Cloud
-                    3. 🎯 Disfruta de voz profesional
-                    
-                    **Actual:** Voz básica (pyttsx3)  
-                    **Con Google Cloud:** Voz natural profesional
-                    """)
+            # Mostrar información sobre pyttsx3
+            if tts_status["pyttsx3"]:
+                st.success("🎯 Sistema de voz básico activo")
+            else:
+                st.warning("⚠️ Sistema de voz no disponible")
         
         # Estadísticas
         st.markdown("### 📈 Estadísticas de Sesión")
@@ -252,7 +183,7 @@ def mostrar_sidebar():
             st.metric("Usuario", mensajes_usuario)
         with col2:
             st.metric("Agente", mensajes_agente)
-            st.metric("Datos", len(st.session_state.lead_info))
+            st.metric("Sesiones", 1)
         
         # Configuraciones de voz
         st.markdown("### 🗣️ Configuración de Voz")
@@ -278,7 +209,6 @@ def mostrar_sidebar():
         st.markdown("### 🎛️ Controles")
         if st.button("🗑️ Limpiar Conversación", help="Eliminar todo el historial"):
             st.session_state.conversation_history = []
-            st.session_state.lead_info = {}
             st.success("Conversación limpiada")
             time.sleep(1)
             st.rerun()
@@ -355,35 +285,7 @@ def procesar_mensaje(contenido, tipo="texto"):
                 context_manager=st.session_state.context_manager  # Contexto inteligente
             )
             
-            # Extraer información del lead usando el sistema avanzado
-            if len(st.session_state.conversation_history) >= 2:  # Al menos una interacción completa
-                try:
-                    # Extraer información detallada del lead
-                    extracted_info = st.session_state.gemini_client.extract_lead_info(
-                        st.session_state.conversation_history
-                    )
-                    
-                    # Actualizar información del lead
-                    if extracted_info:
-                        st.session_state.lead_info = extracted_info
-                        
-                        # Actualizar información en el Context Manager
-                        if st.session_state.context_manager:
-                            st.session_state.context_manager.update_lead_info(extracted_info)
-                        
-                        # Analizar calidad del lead
-                        lead_analysis = st.session_state.gemini_client.analyze_lead_quality(extracted_info)
-                        st.session_state.lead_info['analisis'] = lead_analysis
-                        
-                        # Mostrar notificación si es un lead de alta calidad
-                        score = lead_analysis.get('score', 0)
-                        if score >= 80:
-                            st.success(f"🎯 Lead de alta calidad detectado! Puntuación: {score}/100")
-                        elif score >= 60:
-                            st.info(f"📊 Lead potencial identificado. Puntuación: {score}/100")
-                        
-                except Exception as e:
-                    print(f"Error extrayendo información: {e}")
+            # Lead extraction functionality removed for simplification
             
         except Exception as e:
             print(f"Error procesando con Gemini: {e}")
@@ -506,57 +408,7 @@ def mostrar_controles_input():
                 st.warning("⚠️ No se detectó micrófono o el sistema de audio no está disponible")
                 st.info("💡 Asegúrate de que tu micrófono esté conectado y funcionando")
 
-def mostrar_panel_analisis_lead():
-    """Mostrar panel detallado de análisis de lead"""
-    if not st.session_state.lead_info:
-        return
-        
-    analisis = st.session_state.lead_info.get('analisis', {})
-    if not analisis:
-        return
-    
-    # Panel expandible con análisis detallado
-    with st.expander("📊 Análisis Detallado del Lead", expanded=False):
-        col1, col2 = st.columns([1, 1])
-        
-        with col1:
-            st.markdown("### 🎯 Evaluación de Calidad")
-            score = analisis.get('score', 0)
-            quality = analisis.get('quality_grade', '')
-            
-            # Métrica y barra de progreso
-            st.metric("Puntuación Total", f"{score}/100")
-            st.progress(score/100)
-            st.write(f"**Clasificación:** {quality}")
-            
-            # Fortalezas del lead
-            strengths = analisis.get('strengths', [])
-            if strengths:
-                st.markdown("### ✅ Fortalezas")
-                for strength in strengths:
-                    st.write(f"• {strength}")
-        
-        with col2:
-            # Preocupaciones
-            concerns = analisis.get('concerns', [])
-            if concerns:
-                st.markdown("### ⚠️ Preocupaciones")
-                for concern in concerns:
-                    st.write(f"• {concern}")
-            
-            # Información faltante
-            missing = analisis.get('missing_info', [])
-            if missing:
-                st.markdown("### ❓ Información Pendiente")
-                for item in missing:
-                    st.write(f"• {item}")
-        
-        # Próximos pasos recomendados
-        next_steps = analisis.get('next_steps', [])
-        if next_steps:
-            st.markdown("### 📋 Plan de Acción Recomendado")
-            for i, step in enumerate(next_steps, 1):
-                st.write(f"{i}. {step}")
+# Lead analysis panel function removed for simplification
 
 def main():
     """Función principal de la aplicación"""
@@ -585,8 +437,7 @@ def main():
         st.error("⚠️ La aplicación no puede funcionar sin una configuración válida. Revisa las variables de entorno en el archivo .env")
         st.stop()
     
-    # Panel de análisis de lead (si hay información)
-    mostrar_panel_analisis_lead()
+    # Lead analysis panel removed for simplification
     
     # Layout principal
     col1, col2 = st.columns([2, 1], gap="large")
